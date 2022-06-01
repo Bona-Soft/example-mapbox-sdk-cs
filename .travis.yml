@@ -1,0 +1,24 @@
+git:
+  submodules: false
+
+env:
+  global:
+  - TERM: dumb
+  # Access token.
+  - secure: SPTAqeeedeq9fgVJyA++P/MMgrHJF/z5XGkYrYwnsvl++4ezkrF8byNMuWrnf2+nIzLOXAtBkXMTdRsHFK39ZuBRZxOaZM8vTH6sBU6d/xQ4w+EttPL7V0VG9/k3JjW2zRS18cRb0OEDSmj3UIPL/emEoukNwB9Fv796psgKRRItstxrs0fZuXDYY++kB/LEMxMoXuEMn1uZJCIc7cL22/pe5Fcn6Uj/EoMy934zmrlS6J3AosTb4s3YhOLwt3rec3Vlw9if4Ae3zlzqfHnuue26av3tia9Za0hRxRVew43cP9J3YS4+49piDskRm6HlXfv09V9INqOjtig1a0fPEvWnekhymKsZ6mccKp+8Ii43J/doHIjfXe5DrBQUQ4iw9Sm5KWEyx3ygc14eZU5YAW/7j3TNY103Oo37mTw3gfW6hQsHKiEty4C/nkD5csEn1kKAFIou8yMlzKclr3sbJU1g23JbPQ1TAKTrHU8oo9xQu/dKNL6tmUMuLF1VeUHvIHqHHGfSHbOFbNddL34K8zpx5FoxSYKKyG8KPWOC73g72OrENHrW12Nx3G/+7kWz4oS0EQVnPu/FBWqMvtGJbSTroeQUEaC/EPCQOaxYUIYx9nf0OzG8AO6mI1LO0KwNfrXrbTor75nr6+oLl9VoKMJ+BG60MYtOPQ2lEFWepf0=
+
+language:
+  - csharp
+
+solution:
+  - MapboxSdkCs.sln
+
+mono:
+  - 4.6.1
+
+install:
+  - nuget restore MapboxSdkCs.sln
+
+script:
+  - xbuild /p:Configuration=Release /p:CIBuild=true  /p:StyleCopTreatErrorsAsWarnings=true MapboxSdkCs.sln
+  - mono packages/NUnit.ConsoleRunner.3.5.0/tools/nunit3-console.exe bin/Release/test/Mapbox.UnitTest.dll

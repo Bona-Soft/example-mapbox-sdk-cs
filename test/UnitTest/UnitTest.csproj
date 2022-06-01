@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F04D4384-62B7-4F73-ACD9-C9A5112FC53F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Mapbox.UnitTest</RootNamespace>
+    <AssemblyName>Mapbox.UnitTest</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ReleaseVersion>0.0.1</ReleaseVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNet|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\test\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StyleCopOverrideSettingsFile>..\..\data\Settings.StyleCop</StyleCopOverrideSettingsFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugUWP|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugUWP\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="HttpMock, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HttpMock.2.0.1\lib\net45\HttpMock.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Kayak, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Kayak.0.7.2\lib\Kayak.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.7.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.7\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mapbox.Json">
+      <HintPath>..\..\3rdparty\Json.Net.Unity3D\Net35\Mapbox.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Mapbox.VectorTile.ExtensionMethods, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Mapbox.VectorTile.1.0.4-alpha2\lib\net35\Mapbox.VectorTile.ExtensionMethods.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mapbox.VectorTile.Geometry, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Mapbox.VectorTile.1.0.4-alpha2\lib\net35\Mapbox.VectorTile.Geometry.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mapbox.VectorTile.PbfReader, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Mapbox.VectorTile.1.0.4-alpha2\lib\net35\Mapbox.VectorTile.PbfReader.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mapbox.VectorTile.VectorTileReader, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Mapbox.VectorTile.1.0.4-alpha2\lib\net35\Mapbox.VectorTile.VectorTileReader.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FileSourceMockApiTest.cs" />
+    <Compile Include="FileSourceTest.cs" />
+    <Compile Include="ForwardGeocodeResourceTest.cs" />
+    <Compile Include="ReverseGeocodeResourceTest.cs" />
+    <Compile Include="DirectionResourceTest.cs" />
+    <Compile Include="GeocoderTest.cs" />
+    <Compile Include="GeoCoordinateTest.cs" />
+    <Compile Include="GeoCoordinateBoundsTest.cs" />
+    <Compile Include="TileCoverTest.cs" />
+    <Compile Include="MapTest.cs" />
+    <Compile Include="TileResourceTest.cs" />
+    <Compile Include="CompressionTest.cs" />
+    <Compile Include="PolylineUtilsTest.cs" />
+    <Compile Include="DirectionsTest.cs" />
+    <Compile Include="TileTest.cs" />
+    <Compile Include="VectorTileTest.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="CanonicalTileIdTest.cs" />
+    <Compile Include="LonLatToGeoCoordinateConverterTest.cs" />
+    <Compile Include="PolylineToGeoCoordinateListConverterTest.cs" />
+    <Compile Include="BboxToGeoCoordinateBoundsConverterTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Directions\Directions.csproj">
+      <Project>{08214364-755E-4D6F-B7FF-9D2D49011C20}</Project>
+      <Name>Directions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Geocoding\Geocoding.csproj">
+      <Project>{89F8BAB2-2E7A-425E-B715-2CC4519D561F}</Project>
+      <Name>Geocoding</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Platform\Platform.csproj">
+      <Project>{FE49745C-01F6-4A3F-BF08-828113D3E19F}</Project>
+      <Name>Platform</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Map\Map.csproj">
+      <Project>{6AECAE3C-A1F3-4B94-976B-D27AA4610879}</Project>
+      <Name>Map</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

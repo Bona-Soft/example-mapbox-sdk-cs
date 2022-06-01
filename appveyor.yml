@@ -1,0 +1,92 @@
+image: Visual Studio 2015
+
+init:
+  - git config --global core.autocrlf input
+
+# don't clone - get repo as zip via Github API
+# needed for pushing docs
+shallow_clone: true
+
+
+#platform: Any CPU
+configuration:
+  - DebugNet
+  - DebugUWP
+
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: RAun1F5SuEEP5V/UgXoJ3IKwNoyXMB6DBbk5Ky7/eRAOAc8oJX+qwqynFW9FZZV0
+  MAPBOX_ACCESS_TOKEN:
+    secure: MU9O2VY3TSx/dU9iWTRIV4D8wtgixo8IfdTO7c3XUhyHdyVS3EiTmWkyfdxyOtJwNVwLhhEk7FHmHCvG4Cz1sQ==
+  NUGET_API_KEY:
+    secure: 70LFhjT6ZP09bkCakaKIpUmKlCxgTBT9CctnUhoza92P3SsBFg0HUfodcJWLt+h0
+  GITHUB_TOKEN:
+    secure: lJJOC3O25ATwK7jNt2TeYC9LexbMpef6ZSJDS8J4OFYABWt53IDe8BPcBNuELiyJ
+
+before_build:
+  - SET PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
+  - SET DOCFX_SOURCE_BRANCH_NAME=master
+
+build_script:
+  - FOR /F "tokens=1 delims=<CR> usebackq" %%N in (`nuget ^| %windir%\system32\find /i "NuGet Version"`) DO ECHO %%N
+#  - IF "%configuration%"=="DebugNet" nuget restore MapboxSdkCs.sln
+  - nuget restore MapboxSdkCs.sln
+  - build-appveyor.bat
+
+after_build:
+  - ps: Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+
+after_test:
+  - IF "%configuration%"=="DebugNet" nuget install NUnit.Runners -OutputDirectory tools
+  - IF "%configuration%"=="DebugNet" nuget install OpenCover -OutputDirectory tools
+  - IF "%configuration%"=="DebugNet" nuget install coveralls.net -Pre -OutputDirectory tools
+  - ps: >-
+      If($Env:configuration -eq 'DebugNet'){
+      $nunitrunner = (Resolve-Path "tools/NUnit.ConsoleRunner.*/tools/nunit3-console.exe").ToString();
+      $opencov = (Resolve-Path "tools/OpenCover.*/tools/OpenCover.Console.exe").ToString();
+      $coveralls = (Resolve-Path "tools/coveralls.net.*/tools/csmacnz.coveralls.exe").ToString();
+      & $opencov `
+      -register:user `
+      -target:"$nunitrunner" `
+      -targetargs:"bin\${env:configuration}\test\Mapbox.UnitTest.dll" `
+      -filter:"+[*]* -[*.Tests]*" `
+      -output:opencoverCoverage.xml;
+      & $coveralls --opencover -i opencoverCoverage.xml `
+      --repoToken $env:COVERALLS_REPO_TOKEN `
+      --useRelativePaths `
+      --commitId $env:APPVEYOR_REPO_COMMIT `
+      --commitBranch $env:APPVEYOR_REPO_BRANCH `
+      --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR `
+      --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL `
+      --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE `
+      --jobId $env:APPVEYOR_BUILD_NUMBER `
+      --serviceName appveyor;
+      }
+  - cmd: IF "%configuration%"=="DebugNet" SET PATH=c:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\FxCop;%PATH%
+  - cmd: IF "%configuration%"=="DebugNet" FxCopCmd.exe ^
+      /out:fxcop.out.xml ^
+      /file:bin\Debug\net35\Mapbox.Directions.dll ^
+      /file:bin\Debug\net35\Mapbox.Geocoding.dll ^
+      /file:bin\Debug\net35\Mapbox.Map.dll ^
+      /file:bin\Debug\net35\Mapbox.Platform.dll ^
+      /file:bin\Debug\net35\Mapbox.Utils.dll
+  ##http://help.appveyor.com/discussions/kb/9-support-for-stylecop-report#comment_34865295
+  ##http://help.appveyor.com/discussions/kb/5-code-analysis-fxcop-support
+  ##levels: Informational, Warning, Error, CriticalWarning, CriticalError
+  - ps: >-
+      If($Env:configuration -eq 'DebugNet'){
+      $codeAnalysisErrors = [xml](Get-Content fxcop.out.xml);
+      foreach ($codeAnalysisError in $codeAnalysisErrors.SelectNodes("//Message")) {
+         $issueNode = $codeAnalysisError.SelectSingleNode("Issue");
+         $errorLevel = $($issueNode.Level);
+         if(!$errorLevel){$errorLevel='Warning'};
+         $errorLevel = $errorLevel.Replace("Critical","").Replace("Informational", "Information");
+         Write-Host "$($codeAnalysisError.CheckId): $($codeAnalysisError.TypeName) Line Number: $($issueNode.Line) FileName: $($issueNode.Path)\$($codeAnalysisError.Issue.File) ErrorMessage: $($issueNode.InnerXml)";
+         Add-AppveyorCompilationMessage "$($codeAnalysisError.CheckId): $($codeAnalysisError.TypeName)" -Category $errorLevel -FileName "$($issueNode.Path)\$($codeAnalysisError.Issue.File)" -Line $($issueNode.Line) -Details $($issueNode.InnerXml);
+      }
+      Push-AppveyorArtifact fxcop.out.xml;
+      }
+
+artifacts:
+  - path: src\Documentation\_site
+    name: site
